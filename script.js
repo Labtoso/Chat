@@ -14,7 +14,63 @@ class LabtosoChat {
     async init() {
         await this.loadSharedUsers();
         this.setupEventListeners();
+        this.setupRouting();
         this.checkSession();
+    }
+
+    /**
+     * Setup URL Routing
+     */
+    setupRouting() {
+        // Listen for back/forward button
+        window.addEventListener('popstate', () => {
+            this.handleRoute();
+        });
+
+        // Handle initial route
+        this.handleRoute();
+    }
+
+    /**
+     * Handle Route basierend auf URL
+     */
+    handleRoute() {
+        const path = window.location.pathname;
+        const basePath = path.includes('/chats') ? '/chats' : path.includes('/reg') ? '/reg' : '/login';
+        
+        const sessionUser = sessionStorage.getItem('currentUser');
+        const tokenData = this.loadAuthToken();
+
+        // Wenn angemeldet und auf /chats → zeige Chat
+        if ((sessionUser || tokenData) && basePath === '/chats') {
+            if (!this.currentUser && sessionUser) {
+                this.currentUser = JSON.parse(sessionUser);
+            } else if (!this.currentUser && tokenData) {
+                const user = this.users.find(u => u.id === tokenData.userId);
+                if (user) this.currentUser = user;
+            }
+            this.showScreen('chatScreen');
+            this.initializeChat?.();
+            return;
+        }
+
+        // Wenn registrieren
+        if (basePath === '/reg') {
+            this.showScreen('registerScreen');
+            return;
+        }
+
+        // Sonst → Login
+        this.showScreen('loginScreen');
+        this.navigateTo('/login');
+    }
+
+    /**
+     * Navigate to route
+     */
+    navigateTo(path) {
+        window.history.pushState({}, '', path);
+        this.handleRoute();
     }
 
     /**
@@ -165,12 +221,12 @@ class LabtosoChat {
         // Register toggle
         document.getElementById('registerToggle').addEventListener('click', (e) => {
             e.preventDefault();
-            this.showScreen('registerScreen');
+            this.navigateTo('/reg');
         });
 
         document.getElementById('loginToggle').addEventListener('click', (e) => {
             e.preventDefault();
-            this.showScreen('loginScreen');
+            this.navigateTo('/login');
         });
 
         // Logout
@@ -215,8 +271,7 @@ class LabtosoChat {
         
         if (sessionUser) {
             this.currentUser = JSON.parse(sessionUser);
-            this.showScreen('chatScreen');
-            this.initializeChat();
+            this.navigateTo('/chats');
             return;
         }
 
@@ -228,14 +283,13 @@ class LabtosoChat {
             if (user) {
                 this.currentUser = user;
                 sessionStorage.setItem('currentUser', JSON.stringify(user));
-                this.showScreen('chatScreen');
-                this.initializeChat();
+                this.navigateTo('/chats');
                 return;
             }
         }
 
         // Keine aktive Session oder Token vorhanden
-        this.showScreen('loginScreen');
+        this.navigateTo('/login');
     }
 
     handleLogin(e) {
@@ -257,9 +311,8 @@ class LabtosoChat {
             // Speichere auch in sessionStorage für aktuelle Session
             sessionStorage.setItem('currentUser', JSON.stringify(user));
             
-            this.showScreen('chatScreen');
-            this.initializeChat();
             this.clearLoginForm();
+            this.navigateTo('/chats');
         } else {
             alert('❌ Ungültige Anmeldedaten!');
         }
@@ -311,8 +364,8 @@ class LabtosoChat {
         this.saveUsers();
 
         alert('✅ Registrierung erfolgreich! Bitte melde dich an.');
-        this.showScreen('loginScreen');
         this.clearRegisterForm();
+        this.navigateTo('/login');
     }
 
     initializeChat() {
@@ -519,8 +572,8 @@ class LabtosoChat {
             this.currentChat = null;
             sessionStorage.removeItem('currentUser');
             this.clearAuthToken(); // Lösche auch das verschlüsselte Token
-            this.showScreen('loginScreen');
             this.clearLoginForm();
+            this.navigateTo('/login');
         }
     }
 
