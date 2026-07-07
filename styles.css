@@ -310,12 +310,12 @@ body {
 }
 
 .sidebar-footer {
-    padding: 15px;
+    padding: 12px;
     border-top: 1px solid var(--border-color);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
+    gap: 6px;
     flex-wrap: wrap;
 }
 
@@ -612,8 +612,8 @@ body {
 }
 
 .btn-icon {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     background: rgba(26, 31, 58, 0.5);
     border: 1px solid var(--border-color);
@@ -623,7 +623,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 16px;
+    font-size: 14px;
 }
 
 .btn-icon:hover {
