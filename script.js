@@ -234,6 +234,9 @@ class LabtosoChat {
         document.getElementById('exportBtn').addEventListener('click', () => this.downloadBackup());
         document.getElementById('importBtn').addEventListener('click', () => this.openImportDialog());
 
+        // Settings
+        document.getElementById('settingsBtn').addEventListener('click', () => this.openUsersManagementModal());
+
         // Chat buttons
         document.getElementById('newChatBtn').addEventListener('click', () => this.openNewChatModal());
         document.getElementById('newChatBtnWelcome').addEventListener('click', () => this.openNewChatModal());
@@ -674,6 +677,159 @@ class LabtosoChat {
             reader.readAsText(file);
         };
         input.click();
+    }
+
+    /**
+     * Öffnet das Benutzer-Verwaltungs-Modal
+     */
+    openUsersManagementModal() {
+        this.displayUsersManagement();
+        document.getElementById('usersManagementModal').classList.add('active');
+        document.getElementById('modalOverlay').classList.add('active');
+    }
+
+    /**
+     * Zeigt alle Benutzer im Management Modal
+     */
+    displayUsersManagement() {
+        const listDiv = document.getElementById('usersManagementList');
+        listDiv.innerHTML = '';
+
+        if (this.users.length === 0) {
+            listDiv.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Keine Benutzer</p>';
+            return;
+        }
+
+        this.users.forEach(user => {
+            const userItem = document.createElement('div');
+            userItem.style.cssText = `
+                padding: 12px;
+                background: rgba(26, 31, 58, 0.5);
+                border: 1px solid var(--border-color);
+                border-radius: 8px;
+                margin-bottom: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 10px;
+            `;
+
+            const userInfo = document.createElement('div');
+            userInfo.style.cssText = 'flex: 1;';
+            userInfo.innerHTML = `
+                <div style="font-weight: 600; color: var(--text-primary);">${user.username}</div>
+                <div style="font-size: 12px; color: var(--text-secondary);">ID: ${user.id}</div>
+            `;
+
+            const actions = document.createElement('div');
+            actions.style.cssText = 'display: flex; gap: 8px;';
+            
+            // Block Button
+            const blockBtn = document.createElement('button');
+            blockBtn.className = 'btn-icon';
+            blockBtn.title = user.blocked ? 'Blockierung aufheben' : 'Blockieren';
+            blockBtn.innerHTML = `<i class="fas ${user.blocked ? 'fa-unlock' : 'fa-ban'}"></i>`;
+            blockBtn.style.color = user.blocked ? 'var(--accent-color)' : 'var(--secondary-color)';
+            blockBtn.onclick = () => this.toggleBlockUser(user.id);
+
+            // Mute Button
+            const muteBtn = document.createElement('button');
+            muteBtn.className = 'btn-icon';
+            muteBtn.title = user.muted ? 'Stummschaltung aufheben' : 'Stummschalten';
+            muteBtn.innerHTML = `<i class="fas ${user.muted ? 'fa-volume-up' : 'fa-volume-mute'}"></i>`;
+            muteBtn.style.color = user.muted ? 'var(--accent-color)' : 'var(--secondary-color)';
+            muteBtn.onclick = () => this.toggleMuteUser(user.id);
+
+            // Delete Button (nur für andere Benutzer, nicht für sich selbst)
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'btn-icon';
+            deleteBtn.title = 'Benutzer löschen';
+            deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+            deleteBtn.style.color = 'var(--secondary-color)';
+            if (user.id === this.currentUser.id) {
+                deleteBtn.disabled = true;
+                deleteBtn.style.opacity = '0.5';
+                deleteBtn.title = 'Du kannst dich nicht selbst löschen';
+            } else {
+                deleteBtn.onclick = () => this.deleteUser(user.id);
+            }
+
+            actions.appendChild(blockBtn);
+            actions.appendChild(muteBtn);
+            actions.appendChild(deleteBtn);
+
+            userItem.appendChild(userInfo);
+            userItem.appendChild(actions);
+            listDiv.appendChild(userItem);
+        });
+    }
+
+    /**
+     * Blockiert/Entblockiert einen Benutzer
+     */
+    toggleBlockUser(userId) {
+        const user = this.users.find(u => u.id === userId);
+        if (user) {
+            user.blocked = !user.blocked;
+            this.saveUsers();
+            this.displayUsersManagement();
+            this.syncUsersToGitHub();
+            alert(user.blocked ? '🚫 Benutzer blockiert' : '✅ Blockierung aufgehoben');
+        }
+    }
+
+    /**
+     * Stummschaltet/Enstummschaltet einen Benutzer
+     */
+    toggleMuteUser(userId) {
+        const user = this.users.find(u => u.id === userId);
+        if (user) {
+            user.muted = !user.muted;
+            this.saveUsers();
+            this.displayUsersManagement();
+            this.syncUsersToGitHub();
+            alert(user.muted ? '🔇 Benutzer stummgeschaltet' : '🔊 Stummschaltung aufgehoben');
+        }
+    }
+
+    /**
+     * Löscht einen Benutzer
+     */
+    deleteUser(userId) {
+        const user = this.users.find(u => u.id === userId);
+        if (!user) return;
+
+        if (confirm(`⚠️ Benutzer "${user.username}" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden!`)) {
+            this.users = this.users.filter(u => u.id !== userId);
+            this.saveUsers();
+            this.displayUsersManagement();
+            this.syncUsersToGitHub();
+            alert('✅ Benutzer gelöscht');
+        }
+    }
+
+    /**
+     * Synchronisiert Benutzer zu GitHub (nur lokal für jetzt)
+     */
+    syncUsersToGitHub() {
+        // Speichere lokal - kann später mit GitHub Actions automatisiert werden
+        const data = {
+            users: this.users,
+            lastUpdated: new Date().toISOString()
+        };
+        
+        try {
+            // Versuche zu kopieren - Benutzer kann es auf GitHub pushen
+            const jsonStr = JSON.stringify(data, null, 2);
+            
+            // In Console ausgeben für manuelles Copy-Paste
+            console.log('📋 Benutzer-Daten zum Synchronisieren:');
+            console.log(jsonStr);
+            
+            alert('✅ Benutzer-Daten aktualisiert! Um zu synchronisieren, exportiere die Daten und pushe sie zu GitHub.');
+        } catch (error) {
+            console.error('Fehler beim Synchronisieren:', error);
+        }
     }
 
     showScreen(screenId) {
