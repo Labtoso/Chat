@@ -242,7 +242,7 @@ class LabtosoChat {
         document.getElementById('newChatBtnWelcome').addEventListener('click', () => this.openNewChatModal());
         document.getElementById('createChatBtn').addEventListener('click', () => this.createNewChat());
 
-        // Message form
+        // Message form (wichtig!)
         document.getElementById('messageForm').addEventListener('submit', (e) => this.sendMessage(e));
 
         // Search
@@ -472,7 +472,10 @@ class LabtosoChat {
         this.displayMessages();
 
         // Focus message input
-        document.getElementById('messageInput').focus();
+        const messageInput = document.getElementById('messageInput');
+        if (messageInput) {
+            messageInput.focus();
+        }
     }
 
     displayChats() {
