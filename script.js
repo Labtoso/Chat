@@ -3,17 +3,50 @@ class LabtosoChat {
     constructor() {
         this.ENCRYPTION_KEY = 'LabtosoChatSecureKey2024'; // Verschlüsselungsschlüssel
         this.TOKEN_EXPIRY = 30 * 24 * 60 * 60 * 1000; // 30 Tage
-        this.users = this.loadUsers();
+        this.SHARED_USERS_URL = 'https://raw.githubusercontent.com/Labtoso/Chat/main/shared-users.json';
+        this.users = [];
         this.chats = this.loadChats();
         this.currentUser = null;
         this.currentChat = null;
         this.init();
     }
 
-    init() {
-        this.initializeUsers();
+    async init() {
+        await this.loadSharedUsers();
         this.setupEventListeners();
         this.checkSession();
+    }
+
+    /**
+     * Lädt die gemeinsamen Benutzer von GitHub
+     */
+    async loadSharedUsers() {
+        try {
+            const response = await fetch(this.SHARED_USERS_URL);
+            if (response.ok) {
+                const data = await response.json();
+                this.users = data.users || [];
+            }
+        } catch (error) {
+            console.warn('Konnte gemeinsame Benutzerdatenbank nicht laden, nutze lokale Daten');
+            // Fallback auf lokale Daten
+            this.users = this.loadLocalUsers();
+        }
+    }
+
+    /**
+     * Lädt lokale Benutzerdaten als Fallback
+     */
+    loadLocalUsers() {
+        const stored = localStorage.getItem('chatUsers');
+        return stored ? JSON.parse(stored) : [];
+    }
+
+    /**
+     * Speichert Benutzer lokal
+     */
+    saveLocalUsers() {
+        localStorage.setItem('chatUsers', JSON.stringify(this.users));
     }
 
     /**
@@ -599,13 +632,18 @@ class LabtosoChat {
         document.getElementById('regPasswordConfirm').value = '';
     }
 
-    loadUsers() {
-        const stored = localStorage.getItem('chatUsers');
-        return stored ? JSON.parse(stored) : [];
+    /**
+     * Speichert neue Benutzer lokal
+     */
+    saveUsers() {
+        this.saveLocalUsers();
     }
 
-    saveUsers() {
-        localStorage.setItem('chatUsers', JSON.stringify(this.users));
+    /**
+     * Lädt Benutzer
+     */
+    loadUsers() {
+        return this.users;
     }
 
     loadChats() {
