@@ -15,34 +15,34 @@ class LabtosoChat {
         await this.loadSharedUsers();
         this.setupEventListeners();
         this.setupRouting();
+        // checkSession wird automatisch via setupRouting aufgerufen
+    }
+
+    /**
+     * Setup URL Routing - Hash-based für GitHub Pages Support
+     */
+    setupRouting() {
+        // Listen for hash changes
+        window.addEventListener('hashchange', () => {
+            this.handleRoute();
+        });
+
+        // Handle initial route / check session
         this.checkSession();
     }
 
     /**
-     * Setup URL Routing
-     */
-    setupRouting() {
-        // Listen for back/forward button
-        window.addEventListener('popstate', () => {
-            this.handleRoute();
-        });
-
-        // Handle initial route
-        this.handleRoute();
-    }
-
-    /**
-     * Handle Route basierend auf URL
+     * Handle Route basierend auf URL Hash
      */
     handleRoute() {
-        const path = window.location.pathname;
-        const basePath = path.includes('/chats') ? '/chats' : path.includes('/reg') ? '/reg' : '/login';
+        const hash = window.location.hash.slice(1) || '/';
+        const routePath = hash.split('?')[0]; // Entferne Query Parameters
         
         const sessionUser = sessionStorage.getItem('currentUser');
         const tokenData = this.loadAuthToken();
 
         // Wenn angemeldet und auf /chats → zeige Chat
-        if ((sessionUser || tokenData) && basePath === '/chats') {
+        if ((sessionUser || tokenData) && routePath === '/chats') {
             if (!this.currentUser && sessionUser) {
                 this.currentUser = JSON.parse(sessionUser);
             } else if (!this.currentUser && tokenData) {
@@ -55,22 +55,20 @@ class LabtosoChat {
         }
 
         // Wenn registrieren
-        if (basePath === '/reg') {
+        if (routePath === '/reg') {
             this.showScreen('registerScreen');
             return;
         }
 
         // Sonst → Login
         this.showScreen('loginScreen');
-        this.navigateTo('/login');
     }
 
     /**
      * Navigate to route
      */
     navigateTo(path) {
-        window.history.pushState({}, '', path);
-        this.handleRoute();
+        window.location.hash = path;
     }
 
     /**
@@ -271,7 +269,11 @@ class LabtosoChat {
         
         if (sessionUser) {
             this.currentUser = JSON.parse(sessionUser);
-            this.navigateTo('/chats');
+            // Nur navigieren wenn nicht schon auf /chats
+            const currentHash = window.location.hash.slice(1) || '/';
+            if (currentHash !== '/chats') {
+                this.navigateTo('/chats');
+            }
             return;
         }
 
@@ -283,13 +285,19 @@ class LabtosoChat {
             if (user) {
                 this.currentUser = user;
                 sessionStorage.setItem('currentUser', JSON.stringify(user));
-                this.navigateTo('/chats');
+                const currentHash = window.location.hash.slice(1) || '/';
+                if (currentHash !== '/chats') {
+                    this.navigateTo('/chats');
+                }
                 return;
             }
         }
 
         // Keine aktive Session oder Token vorhanden
-        this.navigateTo('/login');
+        const currentHash = window.location.hash.slice(1) || '/';
+        if (currentHash === '/') {
+            this.navigateTo('/login');
+        }
     }
 
     handleLogin(e) {
