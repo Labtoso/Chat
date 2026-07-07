@@ -102,15 +102,24 @@ class LabtosoChat {
     }
 
     initializeUsers() {
-        // Demo user if no users exist
+        // Demo users if no users exist
         if (this.users.length === 0) {
-            this.users.push({
-                id: '1',
-                username: 'admin',
-                password: '1234',
-                avatar: 'A',
-                createdAt: new Date().toISOString()
-            });
+            this.users.push(
+                {
+                    id: '1',
+                    username: 'admin',
+                    password: '1234',
+                    avatar: 'A',
+                    createdAt: new Date().toISOString()
+                },
+                {
+                    id: '2',
+                    username: 'Labtoso',
+                    password: 'labtoso123',
+                    avatar: 'L',
+                    createdAt: new Date().toISOString()
+                }
+            );
             this.saveUsers();
         }
     }
@@ -133,6 +142,10 @@ class LabtosoChat {
 
         // Logout
         document.getElementById('logoutBtn').addEventListener('click', () => this.logout());
+
+        // Export/Import
+        document.getElementById('exportBtn').addEventListener('click', () => this.downloadBackup());
+        document.getElementById('importBtn').addEventListener('click', () => this.openImportDialog());
 
         // Chat buttons
         document.getElementById('newChatBtn').addEventListener('click', () => this.openNewChatModal());
@@ -476,6 +489,97 @@ class LabtosoChat {
             this.showScreen('loginScreen');
             this.clearLoginForm();
         }
+    }
+
+    /**
+     * Exportiert alle Benutzer & Chats als JSON (für Backup/Sync)
+     */
+    exportData() {
+        const data = {
+            version: '1.0',
+            exportDate: new Date().toISOString(),
+            users: this.users,
+            chats: this.chats
+        };
+        return JSON.stringify(data, null, 2);
+    }
+
+    /**
+     * Importiert Benutzer & Chats aus JSON
+     */
+    importData(jsonData) {
+        try {
+            const data = JSON.parse(jsonData);
+            
+            if (!data.users || !Array.isArray(data.users)) {
+                alert('❌ Ungültiges Dateiformat!');
+                return false;
+            }
+
+            // Merge users (nicht überschreiben, hinzufügen wenn nicht existent)
+            data.users.forEach(importedUser => {
+                const exists = this.users.find(u => u.id === importedUser.id || u.username === importedUser.username);
+                if (!exists) {
+                    this.users.push(importedUser);
+                }
+            });
+
+            // Merge chats
+            if (data.chats && Array.isArray(data.chats)) {
+                data.chats.forEach(importedChat => {
+                    const exists = this.chats.find(c => c.id === importedChat.id);
+                    if (!exists) {
+                        this.chats.push(importedChat);
+                    }
+                });
+            }
+
+            this.saveUsers();
+            this.saveChats();
+            alert('✅ Daten erfolgreich importiert!');
+            return true;
+        } catch (error) {
+            alert('❌ Fehler beim Importieren: ' + error.message);
+            return false;
+        }
+    }
+
+    /**
+     * Download exportierte Daten als Datei
+     */
+    downloadBackup() {
+        const data = this.exportData();
+        const blob = new Blob([data], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `labtoso-chat-backup-${new Date().getTime()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        alert('✅ Backup heruntergeladen!');
+    }
+
+    /**
+     * Öffnet File-Dialog zum Importieren
+     */
+    openImportDialog() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                this.importData(event.target.result);
+                this.displayChats(); // Refresh UI
+            };
+            reader.readAsText(file);
+        };
+        input.click();
     }
 
     showScreen(screenId) {

@@ -350,6 +350,11 @@ body {
     color: var(--accent-color);
 }
 
+.sidebar-actions {
+    display: flex;
+    gap: 8px;
+}
+
 /* Main Chat Area */
 .chat-main {
     flex: 1;
