@@ -1,0 +1,23 @@
+{
+  "name": "labtoso-chat",
+  "version": "1.0.0",
+  "description": "Premium Chat Client für GitHub Pages - Moderner, responsiver Chat mit Login & Registrierung",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "dev": "npx http-server -p 8000"
+  },
+  "keywords": [
+    "chat",
+    "messaging",
+    "web-app",
+    "github-pages",
+    "vanilla-js"
+  ],
+  "author": "Labtoso",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dein-username/chat-app.git"
+  }
+}

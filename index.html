@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Labtoso Chat - Premium Chat Client</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="screen active">
+        <div class="login-container">
+            <div class="login-box">
+                <div class="logo">
+                    <i class="fas fa-comments"></i>
+                    <h1>Labtoso Chat</h1>
+                </div>
+                
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="username">Benutzername</label>
+                        <input type="text" id="username" placeholder="Gib deinen Benutzernamen ein" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Passwort</label>
+                        <input type="password" id="password" placeholder="Gib dein Passwort ein" required>
+                    </div>
+                    
+                    <button type="submit" class="btn-login">
+                        <span>Anmelden</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </form>
+                
+                <div class="register-link">
+                    <p>Noch kein Konto? <a href="#" id="registerToggle">Registrieren</a></p>
+                </div>
+                
+                <div class="demo-info">
+                    <p><small>💡 Demo-Zugangsdaten: admin / 1234</small></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Screen -->
+    <div id="registerScreen" class="screen">
+        <div class="login-container">
+            <div class="login-box">
+                <div class="logo">
+                    <i class="fas fa-user-plus"></i>
+                    <h1>Neues Konto</h1>
+                </div>
+                
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="regUsername">Benutzername</label>
+                        <input type="text" id="regUsername" placeholder="Wähle einen Benutzernamen" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="regPassword">Passwort</label>
+                        <input type="password" id="regPassword" placeholder="Mindestens 6 Zeichen" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="regPasswordConfirm">Passwort wiederholen</label>
+                        <input type="password" id="regPasswordConfirm" placeholder="Bestätige dein Passwort" required>
+                    </div>
+                    
+                    <button type="submit" class="btn-login">
+                        <span>Registrieren</span>
+                        <i class="fas fa-check"></i>
+                    </button>
+                </form>
+                
+                <div class="register-link">
+                    <p><a href="#" id="loginToggle">Zurück zum Login</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Screen -->
+    <div id="chatScreen" class="screen">
+        <div class="chat-container">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <h2>Chats</h2>
+                    <button id="newChatBtn" class="btn-icon" title="Neuer Chat">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchChats" placeholder="Suche Chats...">
+                </div>
+                
+                <div id="chatsList" class="chats-list">
+                    <!-- Dynamisch gefüllt -->
+                </div>
+                
+                <div class="sidebar-footer">
+                    <div class="user-info">
+                        <div class="user-avatar" id="userAvatar">A</div>
+                        <div class="user-details">
+                            <p class="user-name" id="userNameDisplay">Admin</p>
+                            <p class="user-status">Online</p>
+                        </div>
+                    </div>
+                    <button id="logoutBtn" class="btn-icon" title="Abmelden">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Main Chat Area -->
+            <main class="chat-main">
+                <!-- Welcome Screen / No Chat Selected -->
+                <div id="welcomeArea" class="welcome-area">
+                    <div class="welcome-content">
+                        <i class="fas fa-comments"></i>
+                        <h2>Wähle einen Chat aus</h2>
+                        <p>oder erstelle einen neuen Chat</p>
+                        <button id="newChatBtnWelcome" class="btn-primary">
+                            <i class="fas fa-plus"></i> Neuer Chat
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Chat View -->
+                <div id="chatView" class="chat-view hidden">
+                    <!-- Chat Header -->
+                    <div class="chat-header">
+                        <div class="chat-header-left">
+                            <h3 id="chatTitle">Chat</h3>
+                            <p id="chatStatus" class="chat-status">
+                                <span class="status-dot"></span>
+                                <span id="chatStatusText">Online</span>
+                            </p>
+                        </div>
+                        <div class="chat-header-right">
+                            <button class="btn-icon" title="Informationen">
+                                <i class="fas fa-info-circle"></i>
+                            </button>
+                            <button class="btn-icon" title="Mehr Optionen">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Messages Area -->
+                    <div id="messagesArea" class="messages-area">
+                        <!-- Messages werden dynamisch eingefügt -->
+                    </div>
+
+                    <!-- Message Input -->
+                    <div class="message-input-area">
+                        <div class="input-actions">
+                            <button class="btn-icon" title="Emoji">
+                                <i class="fas fa-smile"></i>
+                            </button>
+                            <button class="btn-icon" title="Datei anhängen">
+                                <i class="fas fa-paperclip"></i>
+                            </button>
+                        </div>
+                        <form id="messageForm" class="message-form">
+                            <input 
+                                type="text" 
+                                id="messageInput" 
+                                placeholder="Schreibe eine Nachricht..." 
+                                autocomplete="off"
+                            >
+                            <button type="submit" class="btn-send" title="Senden">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal für neuen Chat -->
+    <div id="newChatModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Neuer Chat</h2>
+                <button class="btn-close" data-modal="newChatModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="chatPartner">Chat Partner (Benutzername)</label>
+                    <input type="text" id="chatPartner" placeholder="z.B. john_doe">
+                </div>
+                <div class="form-group">
+                    <label for="chatName">Chat Name (optional)</label>
+                    <input type="text" id="chatName" placeholder="z.B. Projekt Diskussion">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" data-modal="newChatModal">Abbrechen</button>
+                <button id="createChatBtn" class="btn-primary">Erstellen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Overlay -->
+    <div id="modalOverlay" class="modal-overlay"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
