@@ -37,6 +37,8 @@ body {
 
 .screen.active {
     display: flex;
+    width: 100%;
+    height: 100vh;
 }
 
 .login-container {
@@ -178,6 +180,7 @@ body {
 
 .chat-container {
     display: flex;
+    width: 100%;
     height: 100vh;
     background: linear-gradient(to right, var(--bg-darker) 0%, var(--bg-dark) 100%);
 }
