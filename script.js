@@ -8,14 +8,24 @@ class LabtosoChat {
         this.chats = this.loadChats();
         this.currentUser = null;
         this.currentChat = null;
-        this.init();
+        this.isInitialized = false;
+        this.initPromise = this.init();
     }
 
     async init() {
         await this.loadSharedUsers();
         this.setupEventListeners();
         this.setupRouting();
-        // checkSession wird automatisch via setupRouting aufgerufen
+        this.isInitialized = true;
+    }
+
+    /**
+     * Warte bis Initialization fertig ist
+     */
+    async ensureInitialized() {
+        if (!this.isInitialized) {
+            await this.initPromise;
+        }
     }
 
     /**
@@ -309,8 +319,12 @@ class LabtosoChat {
         }
     }
 
-    handleLogin(e) {
+    async handleLogin(e) {
         e.preventDefault();
+        
+        // Warte bis Users geladen sind
+        await this.ensureInitialized();
+        
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
         const rememberMe = document.getElementById('rememberMe').checked;
@@ -335,8 +349,12 @@ class LabtosoChat {
         }
     }
 
-    handleRegister(e) {
+    async handleRegister(e) {
         e.preventDefault();
+        
+        // Warte bis Users geladen sind
+        await this.ensureInitialized();
+        
         const username = document.getElementById('regUsername').value.trim();
         const password = document.getElementById('regPassword').value;
         const passwordConfirm = document.getElementById('regPasswordConfirm').value;
