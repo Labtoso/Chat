@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Chat App</title>
+    <script>
+        // Preserve the current path for the SPA to handle
+        var path = window.location.pathname;
+        var repo = path.split('/')[1] || '';
+        var targetPath = path.replace('/' + repo, '') || '/';
+        
+        // Store in session storage and redirect to index.html
+        sessionStorage.setItem('redirect_path', targetPath);
+        
+        // Redirect to index.html with hash for SPA routing
+        if (repo && window.location.hostname.includes('github.io')) {
+            window.location.href = '/' + repo + '/index.html#' + targetPath;
+        } else {
+            window.location.href = '/index.html#' + targetPath;
+        }
+    </script>
+</head>
+<body>
+    <p>Redirecting...</p>
+</body>
+</html>

@@ -4,140 +4,110 @@ Ein moderner Chat-Client mit Login-System, der auf GitHub Pages läuft! 🚀
 
 ## Features ✨
 
-- 🔐 **Sichere Authentifizierung** - Login & Registrierung
-- 💬 **Echtzeit-Messaging** - Sofortiges Versenden und Empfangen von Nachrichten
+- 🔐 **Sichere Authentifizierung** - Login & Registrierung mit Verschlüsselung
+- 💬 **Echtzeit-Messaging** - Sofortiges Versenden und Empfangen
 - 🎨 **Modernes UI** - Dunkles Neon-Design mit Gradient
-- 📱 **Responsive Design** - Funktioniert auf Desktop, Tablet & Mobile
-- 💾 **Lokale Speicherung** - Alle Daten bleiben auf deinem Gerät (localStorage)
-- 🔍 **Chat-Suche** - Schnell durch deine Chats navigieren
-- 👥 **Multi-User Support** - Mehrere Benutzer können sich registrieren
-
-## Demo-Zugangsdaten
-
-```
-Benutzername: admin
-Passwort: 1234
-```
+- 📱 **Responsive Design** - Desktop, Tablet & Mobile
+- 💾 **Lokale Speicherung** - Alle Daten bleiben auf deinem Gerät
+- 🌐 **Multi-Device Sync** - Export/Import zwischen Geräten
+- 🚫 **User Management** - Block, Mute, Delete Funktionen
+- 🔗 **URL Routing** - `/#/login`, `/#/reg`, `/#/chats`
 
 ## Technologie Stack 🛠️
 
 - **HTML5** - Struktur
-- **CSS3** - Modernes Design mit Gradients & Neon-Effekten
-- **Vanilla JavaScript** - Keine Dependencies!
-- **localStorage** - Datenspeicherung
+- **CSS3** - Design mit Gradients & Neon
+- **Vanilla JavaScript** - Keine Dependencies
+- **localStorage** - Persistente Datenspeicherung
+- **CryptoJS** - AES Verschlüsselung
+- **GitHub Pages** - Kostenloses Hosting
 
-## Installation & Verwendung
+## Installation
 
-### Lokal ausführen:
-1. `index.html` im Browser öffnen
-2. Oder einen lokalen Server starten:
-   ```bash
-   python -m http.server 8000
-   # oder
-   npx http-server
-   ```
-3. Öffne `http://localhost:8000`
-
-### GitHub Pages Deployment:
-
-#### Option 1: Über GitHub UI
-1. Ein neues Repository erstellen (z.B. `chat-app`)
-2. Alle Dateien hochladen (index.html, styles.css, script.js)
-3. Gehe zu Settings → Pages
-4. Source: `main` branch
-5. Speichern
-6. Die App ist jetzt verfügbar unter: `https://dein-username.github.io/chat-app/`
-
-#### Option 2: Via Git CLI
+### Lokal:
 ```bash
-# Repository initialisieren
-git init
-git add .
-git commit -m "Initial commit: Labtoso Chat"
+# Option 1: Direkt öffnen
+open index.html
 
-# Remote Repository hinzufügen
-git remote add origin https://github.com/dein-username/chat-app.git
-
-# Branch umbenennen und pushen
-git branch -M main
-git push -u origin main
+# Option 2: Mit Server
+python -m http.server 8000
 ```
 
-Dann GitHub Pages in den Repository-Settings aktivieren.
+### GitHub Pages:
+1. Repository erstellen
+2. Alle Dateien hochladen
+3. Settings → Pages → `main` branch
+4. Fertig! 🚀
 
-## Verwendung 🎮
+## Verwendung
 
-### Registrierung
-1. Klick auf "Registrieren"
-2. Fülle das Registrierungsformular aus
-3. Benutzername & Passwort eingeben
-4. Account erstellt! ✅
+### URLs
+```
+/#/login  → Login
+/#/reg    → Registrierung
+/#/chats  → Chat
+```
 
-### Login
-1. Benutzername & Passwort eingeben
-2. "Anmelden" Button klicken
-3. Willkommen im Chat! 👋
+### Benutzer verwalten (⚙️ Button)
+- **🚫 Block** - Blockieren/Entsperren
+- **🔇 Mute** - Stummschalten
+- **🗑️ Delete** - Löschen (nicht auf sich selbst)
 
-### Chat starten
-1. Klick auf "+" Button (Neuer Chat)
-2. Gib einen Benutzernamen ein (z.B. `admin`)
-3. Optional: Chat-Name eingeben
-4. "Erstellen" Button klicken
-5. Los geht's! 💬
+### Sync zwischen Geräten
+1. **Export** (⬇️): `.json` Backup
+2. **Import** (⬆️): Backup hochladen
+3. Fertig! ✨
 
-### Nachrichten versenden
-1. Wähle einen Chat aus
-2. Gib deine Nachricht ins Textfeld ein
-3. Drücke Enter oder klick auf den "Senden" Button
-4. Nachricht erscheint im Chat! ✨
-
-## Dateien-Struktur 📁
+## Dateien-Struktur
 
 ```
 Chat/
-├── index.html      # HTML-Struktur
-├── styles.css      # Styling & Layout
-├── script.js       # JavaScript Logik
-└── README.md       # Diese Datei
+├── index.html           # HTML
+├── styles.css           # Design
+├── script.js            # JavaScript
+├── 404.html             # SPA Routing
+├── .nojekyll            # GitHub Pages
+└── shared-users.json    # Benutzerdatenbank
 ```
 
-## Zukünftige Verbesserungen 🚀
+## Sicherheit
 
-- [ ] Firebase Integration für echte Echtzeit-Sync
-- [ ] Datei-Upload Unterstützung
-- [ ] Emoji-Picker
-- [ ] Voice-Nachrichten
-- [ ] Gruppenichats
-- [ ] Verschlüsselte Nachrichten
-- [ ] Push-Benachrichtigungen
-- [ ] Dark/Light Mode Toggle
-- [ ] Typing Indicator
+- Passwörter in `localStorage` (nicht für Production!)
+- AES-verschlüsselte Auth-Tokens
+- 30 Tage Gültigkeit für "Angemeldet bleiben"
 
-## Sicherheit ⚠️
+## Fehlerbehebung
 
-**Wichtig:** Dieses Projekt nutzt localStorage für Datenspeicherung. 
-- Passwörter werden im localStorage gespeichert (nicht produktiv!)
-- Für echte Produktionsanwendung: Echte Backend-Authentifizierung verwenden
-- Überlegung: Firebase, Node.js + Express, etc.
+### Seite zeigt 404
+- Normal! `404.html` redirects automatisch
+- Hard Refresh: `Ctrl + Shift + R`
 
-## Design-Inspiration 🎨
+### Daten weg nach Reload
+- Private Browsing aktiviert?
+- `localStorage` wurde geleert?
 
-Inspiriert von modernen Chat-Aplikationen mit:
-- Neon Cyan/Türkis Farbschema
-- Dunkler Hintergrund
-- Glow-Effekte
-- Smooth Animations
+### Benutzer nicht synchronisiert
+- Nutze Export/Import Feature
+- Export auf PC, Import auf Laptop
 
-## Browser-Kompatibilität 🌐
+## Zukünftige Features
+
+- [ ] Firebase Cloud Sync
+- [ ] Datei-Upload
+- [ ] Voice Nachrichten
+- [ ] Gruppenchats
+- [ ] E2E Verschlüsselung
+
+## Browser-Kompatibilität
 
 - ✅ Chrome/Edge (neueste)
 - ✅ Firefox (neueste)
 - ✅ Safari (neueste)
-- ✅ Mobile Browser
+- ✅ Mobile
 
-## Kontakt & Support 📧
+## Lizenz
 
-Für Fragen oder Bugmeldungen: [Issues auf GitHub](https://github.com/dein-username/chat-app/issues)
+MIT - Frei nutzbar!
 
 ---
 
