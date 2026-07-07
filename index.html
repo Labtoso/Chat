@@ -6,6 +6,7 @@
     <title>Labtoso Chat - Premium Chat Client</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
 <body>
     <!-- Login Screen -->
@@ -26,6 +27,11 @@
                     <div class="form-group">
                         <label for="password">Passwort</label>
                         <input type="password" id="password" placeholder="Gib dein Passwort ein" required>
+                    </div>
+                    
+                    <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                        <input type="checkbox" id="rememberMe" style="width: auto; cursor: pointer;">
+                        <label for="rememberMe" style="margin: 0; cursor: pointer; font-size: 14px;">Angemeldet bleiben</label>
                     </div>
                     
                     <button type="submit" class="btn-login">

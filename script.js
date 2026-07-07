@@ -1,6 +1,8 @@
 // Chat Application JavaScript
 class LabtosoChat {
     constructor() {
+        this.ENCRYPTION_KEY = 'LabtosoChatSecureKey2024'; // Verschlüsselungsschlüssel
+        this.TOKEN_EXPIRY = 30 * 24 * 60 * 60 * 1000; // 30 Tage
         this.users = this.loadUsers();
         this.chats = this.loadChats();
         this.currentUser = null;
@@ -12,6 +14,91 @@ class LabtosoChat {
         this.initializeUsers();
         this.setupEventListeners();
         this.checkSession();
+    }
+
+    /**
+     * Verschlüsselt einen String
+     */
+    encrypt(text) {
+        return CryptoJS.AES.encrypt(text, this.ENCRYPTION_KEY).toString();
+    }
+
+    /**
+     * Entschlüsselt einen String
+     */
+    decrypt(encrypted) {
+        try {
+            const bytes = CryptoJS.AES.decrypt(encrypted, this.ENCRYPTION_KEY);
+            return bytes.toString(CryptoJS.enc.Utf8);
+        } catch (error) {
+            return null;
+        }
+    }
+
+    /**
+     * Erstellt ein verschlüsseltes Auth-Token
+     */
+    createAuthToken(user) {
+        const tokenData = {
+            userId: user.id,
+            username: user.username,
+            timestamp: Date.now(),
+            expiry: Date.now() + this.TOKEN_EXPIRY
+        };
+        return this.encrypt(JSON.stringify(tokenData));
+    }
+
+    /**
+     * Validiert ein Auth-Token
+     */
+    validateAuthToken(token) {
+        const decrypted = this.decrypt(token);
+        if (!decrypted) return null;
+        
+        try {
+            const tokenData = JSON.parse(decrypted);
+            // Check if token is expired
+            if (tokenData.expiry < Date.now()) {
+                return null;
+            }
+            return tokenData;
+        } catch (error) {
+            return null;
+        }
+    }
+
+    /**
+     * Speichert den Auth-Token persistent
+     */
+    saveAuthToken(user) {
+        const token = this.createAuthToken(user);
+        localStorage.setItem('labtoso_auth_token', token);
+        localStorage.setItem('labtoso_auth_timestamp', Date.now().toString());
+    }
+
+    /**
+     * Lädt den Auth-Token
+     */
+    loadAuthToken() {
+        const token = localStorage.getItem('labtoso_auth_token');
+        if (!token) return null;
+        
+        const tokenData = this.validateAuthToken(token);
+        if (!tokenData) {
+            // Token ist abgelaufen oder invalid
+            this.clearAuthToken();
+            return null;
+        }
+        
+        return tokenData;
+    }
+
+    /**
+     * Löscht den Auth-Token
+     */
+    clearAuthToken() {
+        localStorage.removeItem('labtoso_auth_token');
+        localStorage.removeItem('labtoso_auth_timestamp');
     }
 
     initializeUsers() {
@@ -77,26 +164,53 @@ class LabtosoChat {
     }
 
     checkSession() {
-        const sessionUser = sessionStorage.getItem('currentUser');
+        // Prüfe zuerst sessionStorage für aktuelle Session
+        let sessionUser = sessionStorage.getItem('currentUser');
+        
         if (sessionUser) {
             this.currentUser = JSON.parse(sessionUser);
             this.showScreen('chatScreen');
             this.initializeChat();
-        } else {
-            this.showScreen('loginScreen');
+            return;
         }
+
+        // Prüfe dann verschlüsseltes Token in localStorage ("Angemeldet bleiben")
+        const tokenData = this.loadAuthToken();
+        if (tokenData) {
+            // Token ist gültig, finde den Benutzer
+            const user = this.users.find(u => u.id === tokenData.userId);
+            if (user) {
+                this.currentUser = user;
+                sessionStorage.setItem('currentUser', JSON.stringify(user));
+                this.showScreen('chatScreen');
+                this.initializeChat();
+                return;
+            }
+        }
+
+        // Keine aktive Session oder Token vorhanden
+        this.showScreen('loginScreen');
     }
 
     handleLogin(e) {
         e.preventDefault();
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
+        const rememberMe = document.getElementById('rememberMe').checked;
 
         const user = this.users.find(u => u.username === username && u.password === password);
 
         if (user) {
             this.currentUser = user;
+            
+            // Speichere verschlüsseltes Token wenn "Angemeldet bleiben" aktiviert
+            if (rememberMe) {
+                this.saveAuthToken(user);
+            }
+            
+            // Speichere auch in sessionStorage für aktuelle Session
             sessionStorage.setItem('currentUser', JSON.stringify(user));
+            
             this.showScreen('chatScreen');
             this.initializeChat();
             this.clearLoginForm();
@@ -358,6 +472,7 @@ class LabtosoChat {
             this.currentUser = null;
             this.currentChat = null;
             sessionStorage.removeItem('currentUser');
+            this.clearAuthToken(); // Lösche auch das verschlüsselte Token
             this.showScreen('loginScreen');
             this.clearLoginForm();
         }
@@ -371,6 +486,7 @@ class LabtosoChat {
     clearLoginForm() {
         document.getElementById('username').value = '';
         document.getElementById('password').value = '';
+        document.getElementById('rememberMe').checked = false;
     }
 
     clearRegisterForm() {
