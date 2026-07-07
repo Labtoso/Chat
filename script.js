@@ -72,20 +72,26 @@ class LabtosoChat {
     }
 
     /**
-     * Lädt die gemeinsamen Benutzer von GitHub
+     * Lädt die gemeinsamen Benutzer von GitHub oder nutzt lokale Daten
      */
     async loadSharedUsers() {
         try {
             const response = await fetch(this.SHARED_USERS_URL);
             if (response.ok) {
                 const data = await response.json();
-                this.users = data.users || [];
+                const users = data.users || [];
+                // Wenn Benutzer vorhanden, nutze sie
+                if (users.length > 0) {
+                    this.users = users;
+                    return;
+                }
             }
         } catch (error) {
-            console.warn('Konnte gemeinsame Benutzerdatenbank nicht laden, nutze lokale Daten');
-            // Fallback auf lokale Daten
-            this.users = this.loadLocalUsers();
+            console.warn('Konnte gemeinsame Benutzerdatenbank nicht laden');
         }
+        
+        // Fallback auf lokale Daten wenn GitHub leer oder fehlgeschlagen
+        this.users = this.loadLocalUsers();
     }
 
     /**

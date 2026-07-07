@@ -437,7 +437,9 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(26, 31, 58, 0.3);
+    background: linear-gradient(135deg, rgba(0, 14, 39, 0.6) 0%, rgba(26, 31, 58, 0.4) 100%);
+    box-shadow: 0 2px 15px rgba(0, 212, 255, 0.1);
+    min-height: 70px;
 }
 
 .chat-header-left h3 {
@@ -474,20 +476,21 @@ body {
     padding: 20px;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 0;
     width: 100%;
-    height: calc(100% - 200px);
+    height: 100%;
     justify-content: flex-start;
-    align-content: flex-start;
-    align-items: flex-start;
+    align-items: stretch;
+    background: linear-gradient(to bottom, rgba(10, 14, 39, 0.3), rgba(10, 14, 39, 0.1));
 }
 
 .message {
     display: flex;
     gap: 12px;
     animation: slideIn 0.3s ease;
-    max-width: 70%;
+    max-width: 80%;
     word-wrap: break-word;
+    margin-bottom: 8px;
 }
 
 @keyframes slideIn {
@@ -505,11 +508,18 @@ body {
     flex-direction: row-reverse;
     align-self: flex-end;
     margin-left: auto;
+    margin-right: 0;
+}
+
+.message:not(.own) {
+    align-self: flex-start;
+    margin-right: auto;
+    margin-left: 0;
 }
 
 .message-avatar {
-    width: 35px;
-    height: 35px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
     display: flex;
@@ -518,11 +528,13 @@ body {
     font-weight: bold;
     color: var(--bg-darker);
     flex-shrink: 0;
-    font-size: 12px;
+    font-size: 14px;
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
 }
 
 .message.own .message-avatar {
     background: linear-gradient(135deg, var(--accent-color) 0%, var(--primary-color) 100%);
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
 }
 
 .message-content {
@@ -546,39 +558,47 @@ body {
 }
 
 .message-bubble {
-    max-width: 60%;
+    max-width: 500px;
     padding: 12px 16px;
-    background: rgba(26, 31, 58, 0.6);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
+    background: rgba(26, 31, 58, 0.8);
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    border-radius: 16px;
     color: var(--text-primary);
     word-wrap: break-word;
+    word-break: break-word;
     font-size: 14px;
+    line-height: 1.4;
     transition: all 0.3s ease;
 }
 
 .message.own .message-bubble {
-    background: linear-gradient(135deg, rgba(0, 212, 255, 0.2) 0%, rgba(0, 212, 255, 0.1) 100%);
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.25) 0%, rgba(0, 212, 255, 0.15) 100%);
     border-color: var(--primary-color);
-    box-shadow: var(--neon-glow);
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
 }
 
 .message-bubble:hover {
     border-color: var(--primary-color);
+    background: rgba(26, 31, 58, 0.95);
 }
 
 .message-time {
     font-size: 11px;
     color: var(--text-secondary);
+    margin-top: 4px;
+    display: block;
 }
 
 .message-input-area {
-    padding: 20px;
+    padding: 15px 20px;
     border-top: 2px solid var(--border-color);
-    background: rgba(26, 31, 58, 0.2);
+    background: rgba(26, 31, 58, 0.5);
     display: flex;
     gap: 10px;
     align-items: flex-end;
+    flex-shrink: 0;
+    min-height: 70px;
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .input-actions {
@@ -617,8 +637,8 @@ body {
 .message-form input {
     flex: 1;
     padding: 12px 16px;
-    background: rgba(10, 14, 39, 0.5);
-    border: 2px solid var(--border-color);
+    background: rgba(10, 14, 39, 0.6);
+    border: 1px solid rgba(0, 212, 255, 0.2);
     border-radius: 8px;
     color: var(--text-primary);
     font-size: 14px;
@@ -628,7 +648,7 @@ body {
 .message-form input:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: var(--neon-glow);
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
     background: rgba(10, 14, 39, 0.8);
 }
 
@@ -640,7 +660,7 @@ body {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
     border: none;
     color: var(--bg-darker);
     cursor: pointer;
@@ -650,12 +670,17 @@ body {
     justify-content: center;
     font-size: 16px;
     font-weight: bold;
-    box-shadow: var(--neon-glow);
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+    flex-shrink: 0;
 }
 
 .btn-send:hover {
-    transform: scale(1.1);
-    box-shadow: 0 0 30px rgba(0, 212, 255, 0.8);
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+}
+
+.btn-send:active {
+    transform: scale(0.95);
 }
 
 .btn-send:active {
