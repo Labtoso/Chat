@@ -314,7 +314,7 @@ body {
     border-top: 1px solid var(--border-color);
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     gap: 4px;
     flex-wrap: wrap;
 }
@@ -323,7 +323,9 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
-    flex: 1;
+    flex: 0;
+    max-width: 120px;
+    min-width: 0;
 }
 
 .user-avatar {
@@ -612,8 +614,8 @@ body {
 }
 
 .btn-icon {
-    width: 34px;
-    height: 34px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     background: rgba(26, 31, 58, 0.5);
     border: 1px solid var(--border-color);
@@ -623,7 +625,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 13px;
+    font-size: 16px;
+    flex-shrink: 0;
 }
 
 .btn-icon:hover {
