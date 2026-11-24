@@ -821,6 +821,39 @@ body {
     box-shadow: var(--neon-glow);
 }
 
+/* ============ IMPRESSUM / LEGAL ============ */
+
+.legal-link {
+    color: var(--text-secondary);
+    font-size: 12px;
+    text-decoration: none;
+    opacity: 0.8;
+    transition: all 0.3s ease;
+}
+
+.legal-link:hover,
+.legal-link:focus-visible {
+    color: var(--primary-color);
+    opacity: 1;
+    text-shadow: var(--neon-glow);
+}
+
+.legal-footer {
+    text-align: center;
+    margin-top: 16px;
+}
+
+.sidebar-legal {
+    padding: 0 10px 8px;
+    text-align: center;
+    line-height: 1;
+}
+
+.modal-footer .modal-legal-link {
+    margin-right: auto;
+    align-self: center;
+}
+
 /* ============ RESPONSIVE ============ */
 
 @media (max-width: 768px) {
@@ -852,6 +885,10 @@ body {
     }
 
     .chats-list {
+        display: none;
+    }
+
+    .sidebar-legal {
         display: none;
     }
 
